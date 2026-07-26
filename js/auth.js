@@ -35,8 +35,8 @@ function handleCredentialResponse(response) {
         // Salva sessão no navegador
         localStorage.setItem("eduManagerUser", JSON.stringify(userData));
 
-        // Vai para dashboard
-        window.location.href = "frontend/dashboard.html";
+        // CORREÇÃO AQUI: Apenas dashboard.html (sem o "frontend/")
+        window.location.href = "dashboard.html";
     } else {
         alert("Falha no login com Google. Tente novamente.");
     }
@@ -44,7 +44,6 @@ function handleCredentialResponse(response) {
 
 window.onload = function () {
     google.accounts.id.initialize({
-        // ID do Cliente corrigido com o zero correto (pf80e57)
         client_id: "782376662205-tuh98d4gn2bmnlgfauqnt49bbpf80e57.apps.googleusercontent.com",
         callback: handleCredentialResponse
     });
