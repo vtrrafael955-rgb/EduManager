@@ -1,35 +1,30 @@
 // =======================================
-// EduManager - Auth (Sem One Tap / Sem FedCM)
+// EduManager - Auth (Pop-up OAuth Directo)
 // =======================================
 
-function decodeJWT(token) {
+const CLIENT_ID = "782376662205-tuh98d4gn2bmnlgfauqnt49bbpf80e57.apps.googleusercontent.com";
+let tokenClient;
+
+// Função para buscar dados do perfil do usuário na API do Google
+async function buscarPerfilGoogle(accessToken) {
     try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(
-            atob(base64)
-            .split('')
-            .map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            })
-            .join('')
-        );
-        return JSON.parse(jsonPayload);
-    } catch (e) {
-        return null;
-    }
-}
-
-function handleCredentialResponse(response) {
-    const token = response.credential;
-    if (token) {
-        const user = decodeJWT(token);
-        if (user) {
+        const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+            headers: { Authorization: `Bearer ${accessToken}` }
+        });
+        const user = await response.json();
+        
+        if (user && user.email) {
             fazerLoginNaSessao(user.name, user.email, user.picture);
+        } else {
+            alert("Não foi possível obter os dados do perfil.");
         }
+    } catch (error) {
+        console.error("Erro ao buscar perfil do Google:", error);
+        alert("Erro ao conectar com o Google.");
     }
 }
 
+// Salva a sessão no LocalStorage e vai para o Dashboard
 function fazerLoginNaSessao(nome, email, foto) {
     const userData = {
         nome: nome || "Usuário",
@@ -41,35 +36,31 @@ function fazerLoginNaSessao(nome, email, foto) {
     window.location.href = "dashboard.html";
 }
 
+// Botão de login direto (Sem o Google)
 function entrarModoDireto() {
     fazerLoginNaSessao("Professor / Gestor", "gestor@edumanager.com", "https://via.placeholder.com/40");
 }
 
+// Disparado ao clicar no botão do Google
+function iniciarLoginGoogle() {
+    if (tokenClient) {
+        tokenClient.requestAccessToken();
+    } else {
+        alert("O serviço de login do Google ainda está carregando. Tente novamente em alguns segundos.");
+    }
+}
+
+// Inicializa o cliente OAuth por Pop-up
 window.onload = function () {
-    if (typeof google !== 'undefined' && google.accounts) {
-        try {
-            // Inicializa SEM FedCM e SEM auto_select
-            google.accounts.id.initialize({
-                client_id: "782376662205-tuh98d4gn2bmnlgfauqnt49bbpf80e57.apps.googleusercontent.com",
-                callback: handleCredentialResponse,
-                use_fedcm_for_prompt: false,
-                auto_select: false
-            });
-
-            // Renderiza apenas o botão físico
-            google.accounts.id.renderButton(
-                document.getElementById("googleLoginBtn"),
-                {
-                    theme: "outline",
-                    size: "large",
-                    type: "standard"
+    if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
+        tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: CLIENT_ID,
+            scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
+            callback: (response) => {
+                if (response.access_token) {
+                    buscarPerfilGoogle(response.access_token);
                 }
-            );
-
-            // REMOVIDO: google.accounts.id.prompt(); 
-            // Apagar essa linha elimina a mensagem de "exponential cool down" e NetworkError!
-        } catch (e) {
-            console.log("Erro Auth:", e);
-        }
+            }
+        });
     }
 };
