@@ -1,38 +1,35 @@
 // =======================================
-// EduManager - Auth (Sem falhas de carregamento)
+// EduManager - Auth (Final)
 // =======================================
 
-// A função precisa ser global (window) para o HTML do Google conseguir ativá-la
+// Recebe a resposta do Google assim que o usuário clicar e aprovar
 window.handleCredentialResponse = function(response) {
     if (!response.credential) {
         alert("Erro ao obter credenciais do Google.");
         return;
     }
 
-    // Decodifica o token para pegar nome, email e foto
+    // Lê os dados que vêm encriptados do Google
     const data = parseJwt(response.credential);
 
     const userData = {
-        nome: data.name || "Utilizador",
+        nome: data.name || "Usuário do Google",
         email: data.email || "",
         foto: data.picture || "https://via.placeholder.com/40"
     };
 
-    // Guarda no navegador e atira para o Dashboard
+    // Guarda a sessão e força o navegador para a raiz do Dashboard no Vercel
     localStorage.setItem("eduManagerUser", JSON.stringify(userData));
-    window.location.href = "dashboard.html";
+    window.location.href = "/dashboard.html";
 };
 
-// Descriptografa o código JWT que o Google envia
+// Desencriptador de JWT padrão
 function parseJwt(token) {
     try {
         const base64Url = token.split('.')[1];
         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
         const jsonPayload = decodeURIComponent(
-            atob(base64)
-                .split('')
-                .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-                .join('')
+            atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')
         );
         return JSON.parse(jsonPayload);
     } catch (e) {
@@ -40,3 +37,15 @@ function parseJwt(token) {
         return {};
     }
 }
+
+// O botão azul chama esta função para você nunca ficar preso de fora do sistema
+window.entrarModoDireto = function() {
+    const userData = {
+        nome: "Professor (Modo Teste)",
+        email: "teste@edumanager.com",
+        foto: "https://via.placeholder.com/40"
+    };
+    
+    localStorage.setItem("eduManagerUser", JSON.stringify(userData));
+    window.location.href = "/dashboard.html";
+};
