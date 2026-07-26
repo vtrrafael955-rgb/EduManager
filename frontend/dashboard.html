@@ -14,145 +14,100 @@
 <div class="wrapper">
 
     <aside class="sidebar">
-
         <div class="logo">
             <h2>EduManager</h2>
         </div>
 
         <nav>
-
             <a href="#" class="menu active">🏠 Dashboard</a>
-
             <a href="#" class="menu">📅 Eventos</a>
-
             <a href="#" class="menu">🎓 Turmas</a>
-
             <a href="#" class="menu">📂 Categorias</a>
-
             <a href="#" class="menu">👨‍🏫 Opções</a>
-
             <a href="#" class="menu">📋 Relatórios</a>
-
             <a href="#" class="menu">⚙ Configurações</a>
-
         </nav>
-
     </aside>
 
     <main class="content">
 
+        <!-- Barra Superior (Atualizada com os dados do usuário logado) -->
         <header class="topbar">
-    <div>
-        <h2>Dashboard</h2>
-        <small>Bem-vindo ao EduManager</small>
-    </div>
-
-    <!-- Área de ações e dados do usuário -->
-    <div class="d-flex align-items-center gap-3">
-        
-        <!-- Botão Novo Evento -->
-        <button class="btn btn-primary" id="btnNovoEvento">
-            Novo Evento
-        </button>
-
-        <div class="vr"></div> <!-- Linha divisória vertical do Bootstrap -->
-
-        <!-- Dados do Usuário do Google -->
-        <div class="d-flex align-items-center">
-            <img id="userPhoto" src="" width="45" height="45" class="rounded-circle me-2" alt="Foto">
             <div>
-                <strong id="userName">Usuário</strong><br>
-                <small id="userEmail">carregando...</small>
+                <h2>Dashboard</h2>
+                <small>Bem-vindo ao EduManager</small>
             </div>
-        </div>
 
-        <!-- Botão Sair -->
-        <button class="btn btn-outline-danger btn-sm" onclick="logout()">
-            Sair
-        </button>
-        
-    </div>
-</header>
+            <!-- Área de ações e perfil -->
+            <div class="d-flex align-items-center gap-3">
+                
+                <!-- Botão que você criou -->
+                <button class="btn btn-primary" id="btnNovoEvento">
+                    Novo Evento
+                </button>
+
+                <div class="vr"></div> <!-- Divisória visual -->
+
+                <!-- Dados do usuário (Preenchidos pelo dashboard.js) -->
+                <div class="d-flex align-items-center">
+                    <img id="userPhoto" src="" width="45" height="45" class="rounded-circle me-2" alt="Foto">
+                    <div style="line-height: 1.2;">
+                        <strong id="userName">Carregando...</strong><br>
+                        <small id="userEmail" class="text-muted">Aguarde...</small>
+                    </div>
+                </div>
+
+                <!-- Botão de sair -->
+                <button class="btn btn-outline-danger btn-sm" onclick="logout()">
+                    Sair
+                </button>
+
+            </div>
+        </header>
+
+        <!-- Seus Cards Originais -->
         <div class="cards">
-
             <div class="card-dashboard">
-
                 <h3>Eventos</h3>
-
                 <span id="eventos">0</span>
-
             </div>
-
             <div class="card-dashboard">
-
                 <h3>Participantes</h3>
-
                 <span id="participantes">0</span>
-
             </div>
-
             <div class="card-dashboard">
-
                 <h3>Turmas</h3>
-
                 <span id="turmas">0</span>
-
             </div>
-
             <div class="card-dashboard">
-
                 <h3>Opções</h3>
-
                 <span id="opcoes">0</span>
-
             </div>
-
         </div>
 
+        <!-- Sua Tabela Original -->
         <div class="card mt-4">
-
             <div class="card-body">
-
                 <h4>Eventos cadastrados</h4>
-
                 <table class="table table-hover">
-
                     <thead>
-
                         <tr>
-
                             <th>Nome</th>
-
                             <th>Início</th>
-
                             <th>Fim</th>
-
                             <th>Status</th>
-
                             <th>Ações</th>
-
                         </tr>
-
                     </thead>
-
                     <tbody id="listaEventos">
-
                         <tr>
-
                             <td colspan="5" class="text-center">
-
                                 Nenhum evento cadastrado.
-
                             </td>
-
                         </tr>
-
                     </tbody>
-
                 </table>
-
             </div>
-
         </div>
 
     </main>
