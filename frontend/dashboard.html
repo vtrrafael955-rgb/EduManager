@@ -42,23 +42,37 @@
     <main class="content">
 
         <header class="topbar">
+    <div>
+        <h2>Dashboard</h2>
+        <small>Bem-vindo ao EduManager</small>
+    </div>
 
+    <!-- Área de ações e dados do usuário -->
+    <div class="d-flex align-items-center gap-3">
+        
+        <!-- Botão Novo Evento -->
+        <button class="btn btn-primary" id="btnNovoEvento">
+            Novo Evento
+        </button>
+
+        <div class="vr"></div> <!-- Linha divisória vertical do Bootstrap -->
+
+        <!-- Dados do Usuário do Google -->
+        <div class="d-flex align-items-center">
+            <img id="userPhoto" src="" width="45" height="45" class="rounded-circle me-2" alt="Foto">
             <div>
-                <h2>Dashboard</h2>
-                <small>Bem-vindo ao EduManager</small>
+                <strong id="userName">Usuário</strong><br>
+                <small id="userEmail">carregando...</small>
             </div>
+        </div>
 
-  
-            <button
-             class="btn btn-primary"
-             id="btnNovoEvento">
-
-             Novo Evento
-
-            </button>
-
-        </header>
-
+        <!-- Botão Sair -->
+        <button class="btn btn-outline-danger btn-sm" onclick="logout()">
+            Sair
+        </button>
+        
+    </div>
+</header>
         <div class="cards">
 
             <div class="card-dashboard">
