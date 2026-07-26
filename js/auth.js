@@ -1,67 +1,38 @@
 // =======================================
-// EduManager - Auth (Apenas Google Login)
+// EduManager - Google Auth Handler
 // =======================================
 
-const CLIENT_ID = "782376662205-tuh98d4gn2bmnlgfauqnt49bbpf80e57.apps.googleusercontent.com";
-
-// Função para processar a resposta do token JWT enviado pelo Google
-function handleCredentialResponse(response) {
-    if (!response.credential) {
-        console.error("Erro ao obter credenciais do Google.");
+// Esta função é chamada automaticamente pelo Google após o login com sucesso
+window.handleCredentialResponse = function(response) {
+    if (!response || !response.credential) {
+        alert("Erro ao receber as credenciais do Google.");
         return;
     }
 
-    // Decodifica o token JWT para extrair os dados do utilizador
-    const data = parseJwt(response.credential);
+    const tokenPayload = parseJwt(response.credential);
 
     const userData = {
-        nome: data.name,
-        email: data.email,
-        foto: data.picture
+        nome: tokenPayload.name || "Utilizador",
+        email: tokenPayload.email || "",
+        foto: tokenPayload.picture || "https://via.placeholder.com/40"
     };
 
-    // Salva a sessão no localStorage
+    // Guarda os dados na sessão e redireciona para o painel de controlo
     localStorage.setItem("eduManagerUser", JSON.stringify(userData));
-
-    // Redireciona para o Dashboard (utilizando a raiz do domínio)
     window.location.href = "/dashboard.html";
-}
+};
 
-// Função utilitária para decodificar o token JWT do Google no frontend
+// Decodificador seguro do Token JWT retornado pelo Google
 function parseJwt(token) {
     try {
         const base64Url = token.split('.')[1];
         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
         const jsonPayload = decodeURIComponent(
-            atob(base64)
-                .split('')
-                .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-                .join('')
+            atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')
         );
         return JSON.parse(jsonPayload);
     } catch (e) {
-        console.error("Erro ao decodificar token:", e);
+        console.error("Falha ao decodificar token JWT:", e);
         return {};
     }
 }
-
-// Renderiza o botão oficial do Google na página assim que o SDK estiver pronto
-window.onload = function () {
-    if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-        google.accounts.id.initialize({
-            client_id: CLIENT_ID,
-            callback: handleCredentialResponse
-        });
-
-        // Renderiza o botão dentro da div #buttonDiv
-        const btnContainer = document.getElementById("buttonDiv");
-        if (btnContainer) {
-            google.accounts.id.renderButton(
-                btnContainer,
-                { theme: "outline", size: "large", width: "100%" }
-            );
-        }
-    } else {
-        console.error("SDK do Google Identity não foi carregado no HTML.");
-    }
-};
