@@ -1,8 +1,7 @@
 // =======================================
-// EduManager - Google Auth Handler (Com ID)
+// EduManager - Google Auth Handler
 // =======================================
 
-// Esta função é acionada automaticamente pelo Google após o login com sucesso
 window.handleCredentialResponse = function(response) {
     if (!response || !response.credential) {
         alert("Erro ao receber as credenciais do Google.");
@@ -17,12 +16,11 @@ window.handleCredentialResponse = function(response) {
         foto: tokenPayload.picture || "https://via.placeholder.com/40"
     };
 
-    // Guarda os dados na sessão e redireciona para o painel de controlo
+    // Guarda os dados na sessão e redireciona para o Dashboard oficial
     localStorage.setItem("eduManagerUser", JSON.stringify(userData));
     window.location.href = "/dashboard.html";
 };
 
-// Decodificador seguro do Token JWT retornado pelo Google
 function parseJwt(token) {
     try {
         const base64Url = token.split('.')[1];
