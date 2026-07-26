@@ -1,8 +1,8 @@
 // =======================================
-// EduManager - Auth (Login com Google & Modo Direto)
+// EduManager - Auth (Login do Google + Fallback)
 // =======================================
 
-// Função para decodificar o token JWT do Google
+// Decodifica o token JWT enviado pelo Google
 function decodeJWT(token) {
     try {
         const base64Url = token.split('.')[1];
@@ -17,12 +17,12 @@ function decodeJWT(token) {
         );
         return JSON.parse(jsonPayload);
     } catch (e) {
-        console.error("Erro ao decodificar token JWT:", e);
+        console.error("Erro ao decodificar JWT:", e);
         return null;
     }
 }
 
-// Callback chamado quando o login do Google é efetuado com sucesso
+// Trata a resposta enviada pelo Google
 function handleCredentialResponse(response) {
     const token = response.credential;
     if (token) {
@@ -30,17 +30,17 @@ function handleCredentialResponse(response) {
         if (user) {
             fazerLoginNaSessao(user.name, user.email, user.picture);
         } else {
-            alert("Erro ao ler os dados do utilizador. Tente novamente.");
+            alert("Erro ao ler dados do usuário.");
         }
     } else {
-        alert("Falha no login com o Google. Tente novamente.");
+        alert("Falha no login com Google.");
     }
 }
 
-// Grava as informações do utilizador no localStorage e redireciona para o Dashboard
+// Registra os dados no localStorage e redireciona
 function fazerLoginNaSessao(nome, email, foto) {
     const userData = {
-        nome: nome || "Utilizador",
+        nome: nome || "Usuário",
         email: email || "usuario@edumanager.com",
         foto: foto || "https://via.placeholder.com/40"
     };
@@ -49,32 +49,32 @@ function fazerLoginNaSessao(nome, email, foto) {
     window.location.href = "dashboard.html";
 }
 
-// Entrada alternativa sem passar pelo Google (caso queira testar rapidamente)
+// Botão de acesso direto (Modo Convidado / Teste)
 function entrarModoDireto() {
     fazerLoginNaSessao("Professor / Gestor", "gestor@edumanager.com", "https://via.placeholder.com/40");
 }
 
-// Inicialização do Google Identity Services
+// Inicialização do SDK do Google
 window.onload = function () {
     if (typeof google !== 'undefined' && google.accounts) {
         try {
             google.accounts.id.initialize({
                 client_id: "782376662205-tuh98d4gn2bmnlgfauqnt49bbpf80e57.apps.googleusercontent.com",
                 callback: handleCredentialResponse,
-                use_fedcm_for_prompt: false // Desativa o bloqueio do FedCM no Chrome
+                use_fedcm_for_prompt: false, // Desativa o prompt automáticos FedCM
+                auto_select: false
             });
 
             google.accounts.id.renderButton(
                 document.getElementById("googleLoginBtn"),
                 {
                     theme: "outline",
-                    size: "large"
+                    size: "large",
+                    type: "standard"
                 }
             );
         } catch (e) {
-            console.warn("Aviso na inicialização do Google Auth:", e);
+            console.warn("Aviso ao inicializar Google Auth:", e);
         }
-    } else {
-        console.error("SDK do Google não foi carregado corretamente.");
     }
 };
