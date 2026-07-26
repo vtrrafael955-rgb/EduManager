@@ -1,11 +1,38 @@
 // =======================================
-// EduManager - Auth (Pop-up OAuth Directo)
+// EduManager - Auth (Redirecionamento Absoluto)
 // =======================================
 
 const CLIENT_ID = "782376662205-tuh98d4gn2bmnlgfauqnt49bbpf80e57.apps.googleusercontent.com";
 let tokenClient;
 
-// Função para buscar dados do perfil do usuário na API do Google
+// Redireciona com barra inicial para garantir que vai para a raiz do site no Vercel
+function fazerLoginNaSessao(nome, email, foto) {
+    const userData = {
+        nome: nome || "Utilizador",
+        email: email || "usuario@edumanager.com",
+        foto: foto || "https://via.placeholder.com/40"
+    };
+
+    localStorage.setItem("eduManagerUser", JSON.stringify(userData));
+    // USAR /dashboard.html (A barra garante que vai para a raiz do Vercel)
+    window.location.href = "/dashboard.html";
+}
+
+// Tornar a função global para o botão HTML encontrar sempre
+window.entrarModoDireto = function() {
+    fazerLoginNaSessao("Professor / Gestor", "gestor@edumanager.com", "https://via.placeholder.com/40");
+};
+
+// Tornar o login do Google global
+window.iniciarLoginGoogle = function() {
+    if (tokenClient) {
+        tokenClient.requestAccessToken();
+    } else {
+        // Se o SDK do Google falhar ou demorar, entra em modo de segurança
+        window.entrarModoDireto();
+    }
+};
+
 async function buscarPerfilGoogle(accessToken) {
     try {
         const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
@@ -16,51 +43,28 @@ async function buscarPerfilGoogle(accessToken) {
         if (user && user.email) {
             fazerLoginNaSessao(user.name, user.email, user.picture);
         } else {
-            alert("Não foi possível obter os dados do perfil.");
+            window.entrarModoDireto();
         }
     } catch (error) {
-        console.error("Erro ao buscar perfil do Google:", error);
-        alert("Erro ao conectar com o Google.");
+        console.error("Erro no Google:", error);
+        window.entrarModoDireto();
     }
 }
 
-// Salva a sessão no LocalStorage e vai para o Dashboard
-function fazerLoginNaSessao(nome, email, foto) {
-    const userData = {
-        nome: nome || "Usuário",
-        email: email || "usuario@edumanager.com",
-        foto: foto || "https://via.placeholder.com/40"
-    };
-
-    localStorage.setItem("eduManagerUser", JSON.stringify(userData));
-    window.location.href = "dashboard.html";
-}
-
-// Botão de login direto (Sem o Google)
-function entrarModoDireto() {
-    fazerLoginNaSessao("Professor / Gestor", "gestor@edumanager.com", "https://via.placeholder.com/40");
-}
-
-// Disparado ao clicar no botão do Google
-function iniciarLoginGoogle() {
-    if (tokenClient) {
-        tokenClient.requestAccessToken();
-    } else {
-        alert("O serviço de login do Google ainda está carregando. Tente novamente em alguns segundos.");
-    }
-}
-
-// Inicializa o cliente OAuth por Pop-up
 window.onload = function () {
     if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
-        tokenClient = google.accounts.oauth2.initTokenClient({
-            client_id: CLIENT_ID,
-            scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
-            callback: (response) => {
-                if (response.access_token) {
-                    buscarPerfilGoogle(response.access_token);
+        try {
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
+                callback: (response) => {
+                    if (response.access_token) {
+                        buscarPerfilGoogle(response.access_token);
+                    }
                 }
-            }
-        });
+            });
+        } catch(e) {
+            console.warn("Erro ao iniciar cliente Google Auth");
+        }
     }
 };
