@@ -15,7 +15,7 @@ function handleCredentialResponse(response) {
 
 window.onload = function () {
     google.accounts.id.initialize({
-        client_id: "SEU_CLIENT_ID.apps.googleusercontent.com", // substitua pelo seu Client ID
+        client_id: "782376662205-tuh98d4gn2bmnlgfauqnt49bbpf8oe57.apps.googleusercontent.com", // substitua pelo seu Client ID
         callback: handleCredentialResponse
     });
 
