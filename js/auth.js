@@ -36,7 +36,7 @@ function handleCredentialResponse(response) {
         localStorage.setItem("eduManagerUser", JSON.stringify(userData));
 
         // Vai para dashboard
-        window.location.href = "dashboard.html";
+        window.location.href = "frontend/dashboard.html";
     } else {
         alert("Falha no login com Google. Tente novamente.");
     }
