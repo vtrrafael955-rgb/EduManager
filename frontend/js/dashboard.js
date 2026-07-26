@@ -1,5 +1,5 @@
 // =======================================
-// EduManager - Dashboard (Local System)
+// EduManager - Dashboard (Local Storage)
 // =======================================
 
 const dashboard = {
@@ -20,28 +20,27 @@ const dashboard = {
     verificarAutenticacao() {
         const userStr = localStorage.getItem("eduManagerUser");
         
-        // Se não houver sessão ativa, vai para o login
         if (!userStr) {
+            // Se não estiver logado, redireciona para login
             window.location.href = "login.html";
             return false;
         }
 
         try {
             this.user = JSON.parse(userStr);
-            this.dataKey = "eduData_" + this.user.email;
+            this.dataKey = "eduData_" + (this.user.email || "default");
 
-            // Preenche os dados do perfil na tela
+            // Atualiza os dados no ecran
             const elNome = document.getElementById("userName");
             const elEmail = document.getElementById("userEmail");
             const elFoto = document.getElementById("userPhoto");
 
-            if (elNome) elNome.textContent = this.user.nome || "Usuário";
+            if (elNome) elNome.textContent = this.user.nome || "Utilizador";
             if (elEmail) elEmail.textContent = this.user.email || "";
             if (elFoto && this.user.foto) elFoto.src = this.user.foto;
-            
+
             return true;
         } catch (e) {
-            // Em caso de erro nos dados salvos, limpa e força o login
             localStorage.removeItem("eduManagerUser");
             window.location.href = "login.html";
             return false;
@@ -127,7 +126,7 @@ const dashboard = {
 
     baixarRelatorio() {
         if (this.eventos.length === 0) {
-            alert("Você não possui eventos cadastrados para baixar.");
+            alert("Não possui eventos cadastrados para baixar.");
             return;
         }
 
@@ -141,7 +140,7 @@ const dashboard = {
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `Relatorio_Eventos_${(this.user.nome || "Usuario").replace(/ /g, "_")}.csv`);
+        link.setAttribute("download", `Relatorio_Eventos_${(this.user.nome || "Utilizador").replace(/ /g, "_")}.csv`);
         document.body.appendChild(link);
 
         link.click();
