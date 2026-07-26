@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduManager - Dashboard</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="wrapper">
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <h2>EduManager</h2>
+        </div>
+
+        <nav>
+
+            <a href="#" class="menu active">🏠 Dashboard</a>
+
+            <a href="#" class="menu">📅 Eventos</a>
+
+            <a href="#" class="menu">🎓 Turmas</a>
+
+            <a href="#" class="menu">📂 Categorias</a>
+
+            <a href="#" class="menu">👨‍🏫 Opções</a>
+
+            <a href="#" class="menu">📋 Relatórios</a>
+
+            <a href="#" class="menu">⚙ Configurações</a>
+
+        </nav>
+
+    </aside>
+
+    <main class="content">
+
+        <header class="topbar">
+
+            <div>
+                <h2>Dashboard</h2>
+                <small>Bem-vindo ao EduManager</small>
+            </div>
+
+  
+            <button
+             class="btn btn-primary"
+             id="btnNovoEvento">
+
+             Novo Evento
+
+            </button>
+
+        </header>
+
+        <div class="cards">
+
+            <div class="card-dashboard">
+
+                <h3>Eventos</h3>
+
+                <span id="eventos">0</span>
+
+            </div>
+
+            <div class="card-dashboard">
+
+                <h3>Participantes</h3>
+
+                <span id="participantes">0</span>
+
+            </div>
+
+            <div class="card-dashboard">
+
+                <h3>Turmas</h3>
+
+                <span id="turmas">0</span>
+
+            </div>
+
+            <div class="card-dashboard">
+
+                <h3>Opções</h3>
+
+                <span id="opcoes">0</span>
+
+            </div>
+
+        </div>
+
+        <div class="card mt-4">
+
+            <div class="card-body">
+
+                <h4>Eventos cadastrados</h4>
+
+                <table class="table table-hover">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Nome</th>
+
+                            <th>Início</th>
+
+                            <th>Fim</th>
+
+                            <th>Status</th>
+
+                            <th>Ações</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="listaEventos">
+
+                        <tr>
+
+                            <td colspan="5" class="text-center">
+
+                                Nenhum evento cadastrado.
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script src="js/dashboard.js"></script>
+
+</body>
+</html>
