@@ -1,8 +1,8 @@
 // =======================================
-// EduManager - Google Auth Handler
+// EduManager - Google Auth Handler (Com ID)
 // =======================================
 
-// Esta função é chamada automaticamente pelo Google após o login com sucesso
+// Esta função é acionada automaticamente pelo Google após o login com sucesso
 window.handleCredentialResponse = function(response) {
     if (!response || !response.credential) {
         alert("Erro ao receber as credenciais do Google.");
@@ -35,4 +35,4 @@ function parseJwt(token) {
         console.error("Falha ao decodificar token JWT:", e);
         return {};
     }
-}
+};
