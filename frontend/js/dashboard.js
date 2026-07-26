@@ -1,5 +1,5 @@
 // =======================================
-// EduManager - Dashboard (Dados Locais + Download)
+// EduManager - Dashboard (Local System)
 // =======================================
 
 const dashboard = {
@@ -11,7 +11,7 @@ const dashboard = {
     participantes: [],
 
     iniciar() {
-        this.verificarAutenticacao();
+        if (!this.verificarAutenticacao()) return;
         this.carregarDadosLocais();
         this.atualizarCards();
         this.carregarEventos();
@@ -19,26 +19,37 @@ const dashboard = {
 
     verificarAutenticacao() {
         const userStr = localStorage.getItem("eduManagerUser");
+        
+        // Se não houver sessão ativa, vai para o login
         if (!userStr) {
             window.location.href = "login.html";
-            return;
+            return false;
         }
 
-        this.user = JSON.parse(userStr);
-        // Cada usuário tem sua própria chave de salvamento no navegador baseada no e-mail dele
-        this.dataKey = "eduData_" + this.user.email;
+        try {
+            this.user = JSON.parse(userStr);
+            this.dataKey = "eduData_" + this.user.email;
 
-        // Preenche perfil na tela
-        const elNome = document.getElementById("userName");
-        const elEmail = document.getElementById("userEmail");
-        const elFoto = document.getElementById("userPhoto");
+            // Preenche os dados do perfil na tela
+            const elNome = document.getElementById("userName");
+            const elEmail = document.getElementById("userEmail");
+            const elFoto = document.getElementById("userPhoto");
 
-        if (elNome) elNome.textContent = this.user.nome;
-        if (elEmail) elEmail.textContent = this.user.email;
-        if (elFoto) elFoto.src = this.user.foto;
+            if (elNome) elNome.textContent = this.user.nome || "Usuário";
+            if (elEmail) elEmail.textContent = this.user.email || "";
+            if (elFoto && this.user.foto) elFoto.src = this.user.foto;
+            
+            return true;
+        } catch (e) {
+            // Em caso de erro nos dados salvos, limpa e força o login
+            localStorage.removeItem("eduManagerUser");
+            window.location.href = "login.html";
+            return false;
+        }
     },
 
     carregarDadosLocais() {
+        if (!this.dataKey) return;
         const dadosSalvos = localStorage.getItem(this.dataKey);
         if (dadosSalvos) {
             const parsed = JSON.parse(dadosSalvos);
@@ -49,6 +60,7 @@ const dashboard = {
     },
 
     salvarDadosLocais() {
+        if (!this.dataKey) return;
         const payload = {
             eventos: this.eventos,
             turmas: this.turmas,
@@ -76,7 +88,7 @@ const dashboard = {
         if (this.eventos.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="5" class="text-center">Nenhum evento cadastrado.</td>
+                    <td colspan="5" class="text-center py-4 text-muted">Nenhum evento cadastrado.</td>
                 </tr>
             `;
             return;
@@ -85,12 +97,14 @@ const dashboard = {
         this.eventos.forEach((evento, index) => {
             tbody.innerHTML += `
                 <tr>
-                    <td>${evento.nome}</td>
+                    <td class="fw-bold">${evento.nome}</td>
                     <td>${evento.inicio}</td>
                     <td>${evento.fim}</td>
                     <td><span class="badge bg-success">${evento.status}</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-danger" onclick="dashboard.excluirEvento(${index})">Excluir</button>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-danger" onclick="dashboard.excluirEvento(${index})">
+                            <i class="bi bi-trash"></i> Excluir
+                        </button>
                     </td>
                 </tr>
             `;
@@ -111,14 +125,13 @@ const dashboard = {
         this.carregarEventos();
     },
 
-    // Função para baixar os dados em formato CSV (Abre no Excel)
     baixarRelatorio() {
         if (this.eventos.length === 0) {
-            alert("Você não possui eventos para baixar.");
+            alert("Você não possui eventos cadastrados para baixar.");
             return;
         }
 
-        let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // \uFEFF força acentuação correta no Excel
+        let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
         csvContent += "Nome do Evento;Data Inicio;Data Fim;Status\n";
 
         this.eventos.forEach(ev => {
@@ -128,7 +141,7 @@ const dashboard = {
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `Relatorio_Eventos_${this.user.nome.replace(/ /g, "_")}.csv`);
+        link.setAttribute("download", `Relatorio_Eventos_${(this.user.nome || "Usuario").replace(/ /g, "_")}.csv`);
         document.body.appendChild(link);
 
         link.click();
