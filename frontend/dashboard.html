@@ -1,149 +1,71 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduManager - Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <style>
-        body { background-color: #f8f9fa; }
-        .sidebar { min-height: 100vh; background-color: #212529; }
-        .nav-link { color: rgba(255, 255, 255, 0.75); }
-        .nav-link:hover, .nav-link.active { color: #fff; background-color: rgba(255, 255, 255, 0.1); }
-        .card-stat { border: none; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .user-avatar { width: 40px; height: 40px; object-fit: cover; border-radius: 50%; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>EduManager - Dashboard</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+body{background:#f4f7fb}.sidebar{width:250px;min-height:100vh;background:#212529}
+.nav-link{color:#ddd}.nav-link.active,.nav-link:hover{background:#0d6efd;color:#fff;border-radius:8px}
+.user-avatar{width:42px;height:42px;border-radius:50%;object-fit:cover}
+.card-stat{border:none;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,.08)}
+</style>
 </head>
 <body>
+<div class="d-flex">
+<div class="sidebar p-3 text-white d-flex flex-column">
+<h3>🎓 EduManager</h3><hr>
+<a class="nav-link active p-2" href="#">Dashboard</a>
+<div class="mt-auto">
+<button class="btn btn-danger w-100" onclick="logout()">Sair</button>
+</div>
+</div>
+<div class="flex-grow-1 p-4">
+<div class="d-flex justify-content-between align-items-center mb-4">
+<div><h2>Painel de Controle</h2></div>
+<div class="d-flex align-items-center gap-3">
+<button class="btn btn-success" onclick="dashboard.baixarRelatorio()">Excel</button>
+<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNovoEvento">Novo Evento</button>
+<img id="userPhoto" class="user-avatar" src="">
+<div><div id="userName">Utilizador</div><small id="userEmail"></small></div>
+</div></div>
+<div class="row g-3 mb-4">
+<div class="col"><div class="card card-stat p-3"><small>Eventos</small><h2 id="eventos">0</h2></div></div>
+<div class="col"><div class="card card-stat p-3"><small>Participantes</small><h2 id="participantes">0</h2></div></div>
+<div class="col"><div class="card card-stat p-3"><small>Turmas</small><h2 id="turmas">0</h2></div></div>
+</div>
+<div class="card">
+<div class="card-header">Eventos</div>
+<div class="card-body p-0">
+<table class="table mb-0">
+<thead><tr><th>Evento</th><th>Início</th><th>Fim</th><th>Status</th><th>Ações</th></tr></thead>
+<tbody id="listaEventos"><tr><td colspan="5" class="text-center">Nenhum evento cadastrado.</td></tr></tbody>
+</table>
+</div></div>
+</div></div>
 
-    <div class="d-flex">
-        <div class="sidebar p-3 text-white d-flex flex-column" style="width: 250px;">
-            <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-                <i class="bi bi-mortarboard-fill fs-3 me-2 text-primary"></i>
-                <span class="fs-4 fw-bold">EduManager</span>
-            </a>
-            <hr>
-            <ul class="nav nav-pills flex-column mb-auto">
-                <li class="nav-item">
-                    <a href="#" class="nav-link active rounded-3 mb-1">
-                        <i class="bi bi-speedometer2 me-2"></i> Dashboard
-                    </a>
-                </li>
-            </ul>
-            <hr>
-            <button class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center gap-2" onclick="logout()">
-                <i class="bi bi-box-arrow-right"></i> Sair
-            </button>
-        </div>
+<div class="modal fade" id="modalNovoEvento" tabindex="-1">
+<div class="modal-dialog"><div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title">Novo Evento</h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+<form id="formEvento" onsubmit="event.preventDefault();dashboard.adicionarEvento(document.getElementById('inputNome').value,document.getElementById('inputInicio').value,document.getElementById('inputFim').value,document.getElementById('selectStatus').value);this.reset();bootstrap.Modal.getInstance(document.getElementById('modalNovoEvento')).hide();">
+<div class="mb-3"><label>Nome</label><input id="inputNome" class="form-control" required></div>
+<div class="row">
+<div class="col"><label>Início</label><input id="inputInicio" type="date" class="form-control" required></div>
+<div class="col"><label>Fim</label><input id="inputFim" type="date" class="form-control" required></div>
+</div>
+<div class="mt-3"><label>Status</label><select id="selectStatus" class="form-select"><option>Aberto</option><option>Fechado</option></select></div>
+<div class="mt-3 text-end"><button class="btn btn-primary">Salvar</button></div>
+</form>
+</div>
+</div></div></div>
 
-        <div class="flex-grow-1 p-4">
-            
-            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
-                <div>
-                    <h2 class="fw-bold mb-0">Painel de Controle</h2>
-                    <p class="text-muted mb-0">Gerencie seus eventos e inscrições escolares.</p>
-                </div>
-                
-                <div class="d-flex align-items-center gap-3">
-                    <button class="btn btn-outline-success d-flex align-items-center gap-2" onclick="dashboard.baixarRelatorio()">
-                        <i class="bi bi-file-earmark-excel"></i> Baixar Relatório (Excel)
-                    </button>
-
-                    <button class="btn btn-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalNovoEvento">
-                        <i class="bi bi-plus-circle"></i> Novo Evento
-                    </button>
-
-                    <div class="vr"></div>
-
-                    <div class="d-flex align-items-center gap-2">
-                        <img id="userPhoto" src="https://via.placeholder.com/40" class="user-avatar" alt="Foto Perfil">
-                        <div style="line-height: 1.2;">
-                            <span id="userName" class="fw-bold d-block">Utilizador</span>
-                            <small id="userEmail" class="text-muted">admin@edumanager.com</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <div class="card card-stat bg-white p-3">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div>
-                                <span class="text-muted fw-bold">Total de Eventos</span>
-                                <h2 class="fw-bold text-primary mb-0 mt-1" id="eventos">0</h2>
-                            </div>
-                            <div class="bg-primary bg-opacity-10 p-3 rounded-circle text-primary">
-                                <i class="bi bi-calendar-event fs-3"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="card card-stat bg-white p-3">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div>
-                                <span class="text-muted fw-bold">Participantes</span>
-                                <h2 class="fw-bold text-success mb-0 mt-1" id="participantes">0</h2>
-                            </div>
-                            <div class="bg-success bg-opacity-10 p-3 rounded-circle text-success">
-                                <i class="bi bi-people fs-3"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="card card-stat bg-white p-3">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div>
-                                <span class="text-muted fw-bold">Turmas Cadastradas</span>
-                                <h2 class="fw-bold text-warning mb-0 mt-1" id="turmas">0</h2>
-                            </div>
-                            <div class="bg-warning bg-opacity-10 p-3 rounded-circle text-warning">
-                                <i class="bi bi-journal-bookmark fs-3"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card border-0 shadow-sm rounded-3">
-                <div class="card-header bg-white py-3">
-                    <h5 class="fw-bold mb-0">Eventos Criados</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Nome do Evento / Descrição</th>
-                                    <th>Início</th>
-                                    <th>Fim</th>
-                                    <th>Status</th>
-                                    <th class="text-end">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="listaEventos">
-                                <tr>
-                                    <td colspan="5" class="text-center py-4 text-muted">A carregar eventos...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <div class="modal fade" id="modalNovoEvento" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Cadastrar Novo Evento</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>
